@@ -41,6 +41,7 @@
   .item{ display:flex; align-items:center; gap:12px; background:#fff; border:1px solid var(--line); border-radius:13px; padding:13px 14px; margin-bottom:8px; box-shadow:0 1px 2px rgba(0,0,0,.03); transition:background .12s; }
   .item:active{ background:#faf7f5; }
   .item .ico{ font-size:26px; line-height:1; width:32px; text-align:center; flex:none; }
+  .item img.ico{ width:48px; height:42px; object-fit:contain; }
   .item .lbl{ flex:1; font-size:15.5px; font-weight:500; line-height:1.25; }
   .item .box{ width:28px; height:28px; border:2.2px solid #bbb; border-radius:9px; flex:none; display:flex; align-items:center; justify-content:center; color:#fff; font-size:17px; font-weight:900; transition:all .12s; }
   .item.crit{ border-color:var(--red); }
@@ -82,29 +83,29 @@ const DATA = {
   ataque: { cap:"15–30L · carrega na trilha", cats:[
     ["Mochila & ferramentas", [
       ["🎒","Mochila de ataque"],["☂️","Capa de mochila"],["🔗","Mosquetão"],
-      ["🗡️","Canivete"],["🦯","Bastão de caminhada"],["🦵","Perneira"]]],
+      ["🗡️","Canivete"],["🦯","Bastão de caminhada","","bastao"],["🦵","Perneira"]]],
     ["Luz & eletrônicos", [
-      ["🔦","Lanterna de cabeça 1","crit"],["🔦","Lanterna de cabeça reserva","crit"],
+      ["🔦","Lanterna de cabeça 1","crit","lanterna1"],["🔦","Lanterna de cabeça reserva","crit","lanterna2"],
       ["🔋","Pilhas","crit"],["🔋","Power bank","crit"],["🔌","Cabo do power bank"],
       ["📻","Rádio Baofeng"],["🎙️","Fone do rádio"]]],
     ["Dormir / abrigo", [
-      ["⛺","Bivak"],["🟩","Isolante térmico"],["🛌","Saco de dormir"],
-      ["💤","Travesseiro normal"],["🎈","Travesseiro inflável"],["🛡️","Manta aluminizada"],
-      ["🟫","Lona de proteção"],["👖","Calça de pijama"]]],
+      ["⛺","Bivak","","bivak"],["🟩","Isolante térmico","","isolante"],["🛌","Saco de dormir","","saco_dormir"],
+      ["💤","Travesseiro normal"],["🎈","Travesseiro inflável"],["🛡️","Manta aluminizada","","manta"],
+      ["🟫","Lona de proteção","","lona"],["👖","Calça de pijama"]]],
     ["Roupa D1 (vestir / troca) — checar item a item", [
-      ["🥷","Balaclava D1"],["🎽","Farda D1"],["👖","Calça D1"],["🩳","Bermuda D1"],["🧦","Meia D1"]]],
+      ["🥷","Balaclava D1","","balaclava"],["🎽","Farda D1","","farda"],["👖","Calça D1","","calca"],["🩳","Bermuda D1"],["🧦","Meia D1"]]],
     ["Roupa & acessórios", [
-      ["🧦","Meia extra"],["🧤","Par de luvas"],["🎗️","Munhequeira"],["🧥","Corta-vento"],
-      ["🧥","Puff Legendários"],["🌧️","Capa de chuva"],["🕶️","Óculos escuros"],["🩴","Chinelo"]]],
+      ["🧦","Meia extra"],["🧤","Par de luvas","","luvas"],["🎗️","Munhequeira"],["🧥","Corta-vento","","corta_vento"],
+      ["🧥","Puff Legendários"],["🌧️","Capa de chuva","","capa_chuva"],["🕶️","Óculos escuros","","oculos"],["🩴","Chinelo"]]],
     ["Hidratação & comida", [
-      ["💧","Água / camelback","crit"],["🥛","Copo"],["🍽️","Prato"],["🍴","Talher"],
-      ["🍪","6 barras de proteína"],["🍬","6 géis"],["🍫","Snickers"],["🍟","Chips"],
+      ["💧","Água / camelback","crit","agua"],["🥛","Copo","","copo"],["🍽️","Prato"],["🍴","Talher","","talher"],
+      ["🍪","6 barras de proteína"],["🍬","6 géis"],["🍫","Snickers","","snickers"],["🍟","Chips"],
       ["🌾","Farofa"],["🍜","Miojo"],["🍝","Macarrão"],["🥜","Castanhas"],
-      ["🔥","Fogareiro + gás","opt"]]],
+      ["🔥","Fogareiro + gás","opt","fogareiro"]]],
     ["Higiene & pele", [
-      ["🪥","Escova + pasta"],["🧼","Sabonete"],["🧴","Vaselina"],["🩹","Minâncora"],
-      ["🌞","Protetor solar peq."],["🦟","Repelente"],["🦶","Talco / Tenys Pé (pés)"],
-      ["🧖","Toalha"],["👛","Bolsinha nécessaire"],["🧻","Lenço umedecido"]]],
+      ["🪥","Escova + pasta","","escova"],["🧼","Sabonete"],["🧴","Vaselina","","vaselina"],["🩹","Minâncora"],
+      ["🌞","Protetor solar peq.","","protetor"],["🦟","Repelente","","repelente"],["🦶","Talco / Tenys Pé (pés)","","talco"],
+      ["🧖","Toalha"],["👛","Bolsinha nécessaire"],["🧻","Lenço umedecido","","lenco"]]],
     ["Medicamentos (kit)", [
       ["💊","Kit de remédios (organizar)","crit"],["🧊","Gelol"],["💊","Dorflex"],
       ["💊","Nimesulida"],["💊","Predsim"],["💊","Deltalab"],["🍬","Pastilha / kit garganta"]]],
@@ -115,9 +116,9 @@ const DATA = {
     ["Estrutura & conforto", [
       ["🧳","Mochila logística"],["🪑","Cadeira"],["🪪","Tag LGDN + fotos","both"]]],
     ["Roupa (estoque)", [
-      ["🎽","Farda 2"],["👕","Seg. peles: 1 preta·2 laranja·2 branca"],
-      ["🥷","Balaclavas: 1 preta·2 laranja"],["👖","1 calça + 1 bermuda extra"],
-      ["🦵","1 seg. pele perna extra"],["🧦","6 pares de meia"],["🩲","6 cuecas"],
+      ["🎽","Farda 2","","farda"],["👕","Seg. peles: 1 preta·2 laranja·2 branca"],
+      ["🥷","Balaclavas: 1 preta·2 laranja","","balaclava"],["👖","1 calça + 1 bermuda extra","","calca"],
+      ["🦵","1 seg. pele perna extra"],["🧦","6 pares de meia"],["🩲","6 cuecas","","cueca"],
       ["👕","Roupa seca p/ voltar"]]],
     ["Calçados", [
       ["👟","Tênis 1"],["🥾","Tênis 2"],["🩴","Chinelo"]]],
@@ -125,13 +126,13 @@ const DATA = {
       ["🧼","Sabonete"],["🧴","Desodorante pequeno"],["🪥","Escova + pasta"],
       ["🧖","Toalha (Decathlon)"],["🧺","Sacola roupa suja"],["👟","Sacola tênis sujo"]]],
     ["Comida extra · eletrônicos", [
-      ["🍫","Snickers / barras extra"],["🍟","Chips extra"],["🔌","Power bank extra"],
+      ["🍫","Snickers / barras extra","","snickers"],["🍟","Chips extra"],["🔌","Power bank extra"],
       ["🔋","Pilhas extras"],["🧊","Saco de freezer"]]]
   ]},
   pochete: { cap:"acesso rápido · fica com você quando entrega a mochila", cats:[
     ["Pochete / bolso", [
-      ["🆔","Documento + dinheiro","crit"],["📱","Celular"],["🌞","Protetor solar (mini)"],
-      ["🦟","Repelente (mini)"],["🍫","Snickers / gel"],["🧴","Vaselina / minâncora"],
+      ["🆔","Documento + dinheiro","crit"],["📱","Celular"],["🌞","Protetor solar (mini)","","protetor"],
+      ["🦟","Repelente (mini)","","repelente"],["🍫","Snickers / gel","","snickers"],["🧴","Vaselina / minâncora","","vaselina"],
       ["💊","Dorflex + pastilha"],["🎧","Fone de ouvido"],["🧻","Lenço umedecido"],
       ["🩲","Muda seca (pós-cachoeira)","crit"]]]
   ]}
@@ -149,15 +150,18 @@ function render(){
     html += `<div class="cap">${DATA[bag].cap}</div>`;
     DATA[bag].cats.forEach(([cat,items])=>{
       html += `<div class="cat">${cat}</div>`;
-      items.forEach(([ico,lbl,flag])=>{
+      items.forEach(([ico,lbl,flag,img])=>{
         const id = bag+"|"+lbl;
         const done = state[id] ? "done":"";
         const crit = flag==="crit" ? "crit":"";
         let flagEl = "";
         if(flag==="both") flagEl = `<span class="flag both">NAS DUAS</span>`;
         else if(flag==="opt") flagEl = `<span class="flag opt">OPCIONAL</span>`;
+        const icoEl = img
+          ? `<img class="ico" src="img/${img}.webp" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'ico',textContent:'${ico}'}))">`
+          : `<div class="ico">${ico}</div>`;
         html += `<div class="item ${done} ${crit}" onclick="toggle('${id.replace(/'/g,"\\'")}',this)">
-          <div class="ico">${ico}</div>
+          ${icoEl}
           <div class="lbl">${lbl}</div>${flagEl}
           <div class="box">✓</div>
         </div>`;
