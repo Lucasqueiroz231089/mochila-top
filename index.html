@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#C8410F">
+<title>Mochila TOP — Lucas</title>
+<style>
+  :root{ --orange:#E1571E; --orange-d:#C8410F; --red:#d6273a; --blue:#1b6fb3; --ink:#1b1b1b; --line:#ececec; --ok:#1e9e5a; }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body{ margin:0; padding:0; }
+  body{ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; color:var(--ink); background:#f3f3f3; padding-bottom:40px; }
+
+  /* Topbar (header + tabs juntos, grudam no topo) */
+  .topbar{ position:sticky; top:0; z-index:20; box-shadow:0 2px 10px rgba(0,0,0,.15); }
+  header{ background:linear-gradient(135deg,var(--orange) 0%,var(--orange-d) 100%); color:#fff; padding:14px 16px 10px; padding-top:calc(14px + env(safe-area-inset-top)); }
+  header .row{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  header h1{ margin:0; font-size:20px; font-weight:800; letter-spacing:.5px; }
+  header h1 small{ display:block; font-size:10px; font-weight:600; opacity:.9; letter-spacing:2px; margin-top:2px; }
+  .reset{ background:rgba(0,0,0,.2); color:#fff; border:1.5px solid rgba(255,255,255,.5); border-radius:20px; padding:7px 13px; font-size:12px; font-weight:700; }
+  .bar{ height:8px; background:rgba(255,255,255,.28); border-radius:6px; margin-top:11px; overflow:hidden; }
+  .bar>i{ display:block; height:100%; width:0; background:#fff; border-radius:6px; transition:width .25s; }
+  .barlbl{ font-size:11px; font-weight:600; margin-top:5px; opacity:.95; }
+
+  /* Tabs */
+  .tabs{ display:flex; background:#fff; border-bottom:1px solid var(--line); }
+  .tabs button{ flex:1; border:0; background:none; padding:13px 4px; font-size:13px; font-weight:800; color:#999; border-bottom:3px solid transparent; }
+  .tabs button .n{ display:block; font-size:10px; font-weight:600; color:#bbb; margin-top:2px; }
+  .tabs button.on{ color:var(--orange-d); border-bottom-color:var(--orange); }
+  .tabs button.on .n{ color:var(--orange); }
+
+  /* List */
+  .bag{ display:none; padding:8px 12px 20px; }
+  .bag.on{ display:block; }
+  .cap{ font-size:12px; color:#777; margin:8px 4px 4px; }
+  .cat{ font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.7px; color:var(--orange-d); border-left:4px solid var(--orange); padding-left:9px; margin:18px 2px 8px; }
+  .cat:first-of-type{ margin-top:6px; }
+
+  .item{ display:flex; align-items:center; gap:12px; background:#fff; border:1px solid var(--line); border-radius:13px; padding:13px 14px; margin-bottom:8px; box-shadow:0 1px 2px rgba(0,0,0,.03); transition:background .12s; }
+  .item:active{ background:#faf7f5; }
+  .item .ico{ font-size:26px; line-height:1; width:32px; text-align:center; flex:none; }
+  .item .lbl{ flex:1; font-size:15.5px; font-weight:500; line-height:1.25; }
+  .item .box{ width:28px; height:28px; border:2.2px solid #bbb; border-radius:9px; flex:none; display:flex; align-items:center; justify-content:center; color:#fff; font-size:17px; font-weight:900; transition:all .12s; }
+  .item.crit{ border-color:var(--red); }
+  .item.crit .lbl{ font-weight:700; }
+  .item .flag{ font-size:9px; font-weight:800; color:#fff; background:var(--red); border-radius:5px; padding:2px 6px; margin-left:2px; white-space:nowrap; }
+  .flag.both{ background:var(--blue); } .flag.opt{ background:#7a7a7a; }
+
+  .item.done{ background:#f4faf6; border-color:#cfead9; }
+  .item.done .box{ background:var(--ok); border-color:var(--ok); }
+  .item.done .lbl{ text-decoration:line-through; color:#9bb3a4; font-weight:500; }
+  .item.done .ico{ filter:grayscale(1); opacity:.55; }
+
+  .foot{ text-align:center; color:#aaa; font-size:11px; margin:18px 0 6px; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <header>
+    <div class="row">
+      <h1>MOCHILA TOP<small>LEGENDÁRIOS · LUCAS</small></h1>
+      <button class="reset" onclick="resetAll()">Limpar</button>
+    </div>
+    <div class="bar"><i id="barfill"></i></div>
+    <div class="barlbl" id="barlbl">0 de 0 itens</div>
+  </header>
+  <div class="tabs">
+    <button class="on" data-tab="ataque" onclick="showTab('ataque',this)">🎒 ATAQUE<span class="n">na trilha</span></button>
+    <button data-tab="logistica" onclick="showTab('logistica',this)">🧳 LOGÍSTICA<span class="n">na base</span></button>
+    <button data-tab="pochete" onclick="showTab('pochete',this)">👝 POCHETE<span class="n">com você</span></button>
+  </div>
+</div>
+
+<div id="app"></div>
+<div class="foot">Lista única — vale para todos os TOPs · &ldquo;Desfrute o caminho&rdquo;</div>
+
+<script>
+const DATA = {
+  ataque: { cap:"15–30L · carrega na trilha", cats:[
+    ["Mochila & ferramentas", [
+      ["🎒","Mochila de ataque"],["☂️","Capa de mochila"],["🔗","Mosquetão"],
+      ["🗡️","Canivete"],["🦯","Bastão de caminhada"],["🦵","Perneira"]]],
+    ["Luz & eletrônicos", [
+      ["🔦","Lanternas cabeça + reserva","crit"],["🔋","Pilhas","crit"],
+      ["🔌","Power bank + cabo","crit"],["🎧","Fone de ouvido / rádio"]]],
+    ["Dormir / abrigo", [
+      ["⛺","Bivak"],["🛏️","Isolante térmico"],["🛌","Saco de dormir"],
+      ["💤","Travesseiro inflável"],["🛡️","Manta aluminizada"],["🟫","Lona de proteção"],
+      ["👖","Calça de dormir"]]],
+    ["Roupa & acessórios", [
+      ["🎒","Saco roupas D1 (balaclava·farda·calça·bermuda·meia)"],["🧦","Meia extra"],
+      ["🧤","Par de luvas"],["🎗️","Munhequeira"],["🧥","Corta-vento"],
+      ["🧥","Puff Legendários"],["☔","Capa de chuva"],["🕶️","Óculos escuros"],["🩴","Chinelo"]]],
+    ["Hidratação & comida", [
+      ["💧","Água / camelback","crit"],["🥛","Copo"],["🍽️","Prato"],["🍴","Talher"],
+      ["🍪","6 barras de proteína"],["🍬","6 géis"],["🍫","Snickers"],["🍟","Chips"],
+      ["🌾","Farofa"],["🍜","Miojo"],["🍝","Macarrão"],["🥜","Castanhas"],
+      ["🔥","Fogareiro + gás","opt"]]],
+    ["Higiene & pele", [
+      ["🪥","Escova + pasta"],["🧼","Sabonete"],["🧴","Vaselina"],["🩹","Minâncora"],
+      ["🌞","Protetor solar peq."],["🦟","Repelente"],["🦶","Talco / Tenys Pé (pés)"],
+      ["🧖","Toalha"],["👛","Bolsinha nécessaire"],["🧻","Lenço umedecido"]]],
+    ["Medicamentos (kit)", [
+      ["💊","Kit de remédios (organizar)","crit"],["🧊","Gelol"],["💊","Dorflex"],
+      ["💊","Nimesulida"],["💊","Predsim"],["💊","Deltalab"],["🍬","Pastilha / kit garganta"]]],
+    ["Documentos & lixo", [
+      ["🪪","Tag LGDN + fotos","both"],["🗑️","Saco de lixo"]]]
+  ]},
+  logistica: { cap:"45–60L · fica na BASE", cats:[
+    ["Estrutura & conforto", [
+      ["🧳","Mochila logística"],["🪑","Cadeira"],["🪪","Tag LGDN + fotos","both"]]],
+    ["Roupa (estoque)", [
+      ["🎽","Farda 2"],["👕","Seg. peles: 1 preta·2 laranja·2 branca"],
+      ["🥷","Balaclavas: 1 preta·2 laranja"],["👖","1 calça + 1 bermuda extra"],
+      ["🦵","1 seg. pele perna extra"],["🧦","6 pares de meia"],["🩲","6 cuecas"],
+      ["👕","Roupa seca p/ voltar"]]],
+    ["Calçados", [
+      ["👟","Tênis 1"],["🥾","Tênis 2"],["🩴","Chinelo"]]],
+    ["Higiene", [
+      ["🧼","Sabonete"],["🧴","Desodorante pequeno"],["🪥","Escova + pasta"],
+      ["🧖","Toalha (Decathlon)"],["🧺","Sacola roupa suja"],["👟","Sacola tênis sujo"]]],
+    ["Comida extra · eletrônicos", [
+      ["🍫","Snickers / barras extra"],["🍟","Chips extra"],["🔌","Power bank extra"],
+      ["🔋","Pilhas extras"],["🧊","Saco de freezer"]]]
+  ]},
+  pochete: { cap:"acesso rápido · fica com você quando entrega a mochila", cats:[
+    ["Pochete / bolso", [
+      ["🆔","Documento + dinheiro","crit"],["📱","Celular"],["🌞","Protetor solar (mini)"],
+      ["🦟","Repelente (mini)"],["🍫","Snickers / gel"],["🧴","Vaselina / minâncora"],
+      ["💊","Dorflex + pastilha"],["🎧","Fone de ouvido"],["🧻","Lenço umedecido"],
+      ["🩲","Muda seca (pós-cachoeira)","crit"]]]
+  ]}
+};
+
+const KEY = "mochila_top_lucas_v1";
+let state = JSON.parse(localStorage.getItem(KEY) || "{}");
+const flagTxt = {crit:"❗", both:"NAS DUAS", opt:"OPCIONAL"};
+
+function render(){
+  const app = document.getElementById("app");
+  let html = "";
+  for(const bag in DATA){
+    html += `<div class="bag ${bag==='ataque'?'on':''}" id="bag-${bag}">`;
+    html += `<div class="cap">${DATA[bag].cap}</div>`;
+    DATA[bag].cats.forEach(([cat,items])=>{
+      html += `<div class="cat">${cat}</div>`;
+      items.forEach(([ico,lbl,flag])=>{
+        const id = bag+"|"+lbl;
+        const done = state[id] ? "done":"";
+        const crit = flag==="crit" ? "crit":"";
+        let flagEl = "";
+        if(flag==="both") flagEl = `<span class="flag both">NAS DUAS</span>`;
+        else if(flag==="opt") flagEl = `<span class="flag opt">OPCIONAL</span>`;
+        html += `<div class="item ${done} ${crit}" onclick="toggle('${id.replace(/'/g,"\\'")}',this)">
+          <div class="ico">${ico}</div>
+          <div class="lbl">${lbl}</div>${flagEl}
+          <div class="box">✓</div>
+        </div>`;
+      });
+    });
+    html += `</div>`;
+  }
+  app.innerHTML = html;
+  updateBar();
+}
+function toggle(id, el){
+  state[id] = !state[id];
+  if(!state[id]) delete state[id];
+  localStorage.setItem(KEY, JSON.stringify(state));
+  el.classList.toggle("done");
+  updateBar();
+}
+function updateBar(){
+  let total=0, done=0;
+  for(const bag in DATA) DATA[bag].cats.forEach(([c,items])=>items.forEach(([i,lbl])=>{
+    total++; if(state[bag+"|"+lbl]) done++;
+  }));
+  const pct = total? Math.round(done/total*100):0;
+  document.getElementById("barfill").style.width = pct+"%";
+  document.getElementById("barlbl").textContent = `${done} de ${total} itens · ${pct}%`;
+}
+function showTab(tab, btn){
+  document.querySelectorAll(".bag").forEach(b=>b.classList.remove("on"));
+  document.getElementById("bag-"+tab).classList.add("on");
+  document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("on"));
+  btn.classList.add("on");
+  window.scrollTo(0,0);
+}
+function resetAll(){
+  if(confirm("Desmarcar todos os itens?")){
+    state = {}; localStorage.setItem(KEY, JSON.stringify(state)); render();
+  }
+}
+render();
+</script>
+</body>
+</html>
